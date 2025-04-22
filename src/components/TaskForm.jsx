@@ -17,7 +17,7 @@ const TaskForm = ({ token, onTaskCreated }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await API.post('/tasks/create', form, {
+      await API.post('/api/tasks/create', form, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

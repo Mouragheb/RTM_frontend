@@ -17,7 +17,7 @@ const TaskCard = ({ task, onComplete }) => {
     try {
       setUploading(true);
       const token = localStorage.getItem('token');
-      await API.put(`/tasks/${task._id}/complete`, formData, {
+      await API.put(`/api/tasks/${task._id}/complete`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',

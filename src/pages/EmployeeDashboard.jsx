@@ -17,7 +17,7 @@ const EmployeeDashboard = () => {
 
   const fetchTasks = async () => {
     try {
-      const res = await API.get(`/tasks/employee/${userId}`, {
+      const res = await API.get(`/api/tasks/employee/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTasks(res.data.tasks || []);

@@ -15,7 +15,7 @@ const PhotoUpload = ({ taskId, token, onCompleted }) => {
     formData.append('photo', file);
 
     try {
-      await API.put(`/tasks/${taskId}/complete`, formData, {
+      await API.put(`/api/tasks/${taskId}/complete`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',

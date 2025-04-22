@@ -42,7 +42,7 @@ const AddRestaurant = () => {
     }
 
     try {
-      const response = await API.post('/restaurants/create', formData, {
+      const response = await API.post('/api/restaurants/create', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${token}`

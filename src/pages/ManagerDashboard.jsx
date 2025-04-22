@@ -22,9 +22,9 @@ const ManagerDashboard = () => {
       try {
         const headers = { Authorization: `Bearer ${token}` };
         const [resRestaurant, resEmployees, resTasks] = await Promise.all([
-          API.get(`/restaurants/${restaurantId}`, { headers }),
-          API.get('/auth/employees', { headers }),
-          API.get(`/tasks/restaurant/${restaurantId}`, { headers }),
+          API.get(`/api/restaurants/${restaurantId}`, { headers }),
+          API.get('/api/auth/employees', { headers }),
+          API.get(`/api/tasks/restaurant/${restaurantId}`, { headers }),
         ]);
         setRestaurant(resRestaurant.data);
         setEmployees(resEmployees.data.employees || []);
@@ -49,7 +49,7 @@ const ManagerDashboard = () => {
   const handleDeleteTask = async (taskId) => {
     if (window.confirm('Delete this task?')) {
       try {
-        await API.delete(`/tasks/${taskId}`, {
+        await API.delete(`/api/tasks/${taskId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setTasks((prev) => prev.filter((t) => t._id !== taskId));
@@ -62,7 +62,7 @@ const ManagerDashboard = () => {
   const handleDeleteRestaurant = async () => {
     if (window.confirm('Delete this restaurant?')) {
       try {
-        await API.delete(`/restaurants/${restaurantId}`, {
+        await API.delete(`/api/restaurants/${restaurantId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         navigate('/my-restaurants');

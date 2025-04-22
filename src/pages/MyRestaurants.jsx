@@ -21,7 +21,7 @@ const MyRestaurants = () => {
           return;
         }
 
-        const res = await API.get('/restaurants/my-restaurants', {
+        const res = await API.get('/api/restaurants/my-restaurants', {
           headers: { Authorization: `Bearer ${token}` },
         });
 

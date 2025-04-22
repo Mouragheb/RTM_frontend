@@ -41,7 +41,7 @@ const AddTask = () => {
       formData.append('restaurant', restaurantId);
       if (photo) formData.append('photo', photo);
 
-      await API.post('/tasks/create', formData, {
+      await API.post('/api/tasks/create', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
