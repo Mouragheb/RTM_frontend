@@ -4,6 +4,7 @@ import axios from '../api/api';
 import Header from '../components/Header';
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
+import API from '../api/api';
 
 const Login = () => {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -18,7 +19,7 @@ const Login = () => {
     setError('');
 
     try {
-      const res = await axios.post('/auth/login', form);
+      const res = await API.post('/api/auth/login', form);
       const token = res.data.token;
       const role = res.data.user.role;
       const restaurantId = res.data.user.restaurant;
