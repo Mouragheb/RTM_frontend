@@ -4,6 +4,7 @@ import axios from '../api/api';
 import Header from '../components/Header';
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
+import API from '../api/api'; // or the correct relative path
 
 const Register = () => {
   const [form, setForm] = useState({
@@ -27,7 +28,7 @@ const Register = () => {
     setError('');
     setSuccess(false);
     try {
-      await axios.post('/auth/register', form);
+      await API.post('/api/auth/register', form);
       setSuccess(true);
       setTimeout(() => navigate('/login'), 1500);
     } catch (err) {
