@@ -18,7 +18,7 @@ const Login = () => {
     setError('');
 
     try {
-      const res = await API.post('/api/auth/login', form);
+      const res = await API.post('/auth/login', form);
       const token = res.data.token;
       const role = res.data.user.role;
       const restaurantId = res.data.user.restaurant;
