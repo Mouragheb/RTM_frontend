@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import API from '../api/api'; // Adjust the path as neededimport Header from '../components/Header';
+import API from '../api/api'; // Fixed import line
+import Header from '../components/Header';
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
 import { jwtDecode } from 'jwt-decode';

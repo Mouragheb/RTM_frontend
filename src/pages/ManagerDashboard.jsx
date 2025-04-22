@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import API from '../api/api'; // Adjust the path as needed
+import API from '../api/api';
+import Header from '../components/Header';
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
+import { BASE_IMAGE_URL } from '../utils/constants'; // new import
 
 const ManagerDashboard = () => {
   const { id: restaurantId } = useParams();
@@ -10,7 +12,7 @@ const ManagerDashboard = () => {
   const [restaurant, setRestaurant] = useState(null);
   const [employees, setEmployees] = useState([]);
   const [tasks, setTasks] = useState([]);
-  const [view, setView] = useState('active'); // 'active' or 'completed'
+  const [view, setView] = useState('active');
   const [loading, setLoading] = useState(true);
   const [copySuccess, setCopySuccess] = useState('');
   const token = localStorage.getItem('token');
@@ -94,7 +96,7 @@ const ManagerDashboard = () => {
           <>
             <div style={styles.card}>
               <img
-                src={`http://localhost:8080/${restaurant.logo}`}
+                src={`${BASE_IMAGE_URL}/${restaurant.logo}`}
                 alt="Restaurant Logo"
                 style={styles.logo}
               />
@@ -125,12 +127,6 @@ const ManagerDashboard = () => {
                       }
                     >
                       + Add Task
-                    </button>
-                    <button
-                      style={styles.deleteButton}
-                      onClick={() => handleDeleteEmployee(emp._id)}
-                    >
-                      Remove Employee
                     </button>
                   </div>
                 </li>
@@ -171,7 +167,7 @@ const ManagerDashboard = () => {
                             <div>
                               <p><strong>Before:</strong></p>
                               <img
-                                src={`http://localhost:8080/${task.photoBefore}`}
+                                src={`${BASE_IMAGE_URL}/${task.photoBefore}`}
                                 alt="Before"
                                 style={styles.taskPhoto}
                               />
@@ -181,7 +177,7 @@ const ManagerDashboard = () => {
                             <div>
                               <p><strong>After:</strong></p>
                               <img
-                                src={`http://localhost:8080/${task.photoAfter}`}
+                                src={`${BASE_IMAGE_URL}/${task.photoAfter}`}
                                 alt="After"
                                 style={styles.taskPhoto}
                               />
@@ -193,7 +189,7 @@ const ManagerDashboard = () => {
                           <div>
                             <p><strong>Task Image:</strong></p>
                             <img
-                              src={`http://localhost:8080/${task.photoBefore}`}
+                              src={`${BASE_IMAGE_URL}/${task.photoBefore}`}
                               alt="Before"
                               style={styles.taskPhoto}
                             />
@@ -222,6 +218,7 @@ const ManagerDashboard = () => {
   );
 };
 
+// styles (unchanged)
 const styles = {
   container: { padding: '40px', textAlign: 'center' },
   card: { border: '1px solid #ccc', borderRadius: '8px', padding: '20px', maxWidth: '400px', margin: '0 auto', backgroundColor: '#f9f9f9' },

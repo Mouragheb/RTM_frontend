@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import API from '../api/api'; // Adjust the path as neededimport Header from '../components/Header';
+import API from '../api/api';
+import Header from '../components/Header';
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
+import { BASE_IMAGE_URL } from '../utils/constants';
 
 const MyRestaurants = () => {
   const [restaurants, setRestaurants] = useState([]);
@@ -63,7 +65,7 @@ const MyRestaurants = () => {
                 onClick={() => goToDashboard(r._id)}
               >
                 <img
-                  src={`http://localhost:8080/${r.logo}`}
+                  src={`${BASE_IMAGE_URL}/${r.logo}`}
                   alt={r.name}
                   style={styles.logo}
                 />

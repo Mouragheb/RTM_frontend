@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from '../api/api';
+import API from '../api/api'; // Fixed import here
 import Header from '../components/Header';
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
@@ -60,7 +60,6 @@ const AddTask = () => {
     <div>
       <Header />
       <Nav />
-
       <main style={styles.container}>
         <h2>Assign Task</h2>
         <form onSubmit={handleSubmit} style={styles.form}>
@@ -88,16 +87,12 @@ const AddTask = () => {
             <option value="daily">Daily</option>
             <option value="weekly">Weekly</option>
           </select>
-
           <input type="file" accept="image/*" onChange={handleFileChange} />
-
           {error && <p style={styles.error}>{error}</p>}
           {success && <p style={styles.success}>{success}</p>}
-
           <button type="submit">Assign Task</button>
         </form>
       </main>
-
       <Footer />
     </div>
   );

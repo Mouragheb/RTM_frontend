@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from '../api/api';
 import Header from '../components/Header';
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
-import API from '../api/api'; // or the correct relative path
+import API from '../api/api';
 
 const Register = () => {
   const [form, setForm] = useState({
@@ -32,7 +31,6 @@ const Register = () => {
       setSuccess(true);
       setTimeout(() => navigate('/login'), 1500);
     } catch (err) {
-      console.error(err);
       setError(err.response?.data?.message || 'Registration failed');
     }
   };
