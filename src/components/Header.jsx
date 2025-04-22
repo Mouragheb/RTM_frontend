@@ -1,10 +1,10 @@
 import React from 'react';
-import './Header.css'; // Optional: for styling if you want later
+
 import logo from '/logo.png'; // adjust path if needed
 
 const Header = () => {
   return (
-    <header style={styles.header}>
+    <header style={styles.headerContainer}>
       <img src={logo} alt="RTM Logo" style={styles.logo} />
       <h1 style={styles.title}>Restaurant Task Manager</h1>
     </header>
@@ -12,7 +12,7 @@ const Header = () => {
 };
 
 const styles = {
-  header: {
+  headerContainer: {
     display: 'flex',
     alignItems: 'center',
     backgroundColor: '#282c34',
