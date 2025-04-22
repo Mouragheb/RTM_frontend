@@ -41,7 +41,7 @@ const AddTask = () => {
       formData.append('restaurant', restaurantId);
       if (photo) formData.append('photo', photo);
 
-      await axios.post('/tasks/create', formData, {
+      await API.post('/tasks/create', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',

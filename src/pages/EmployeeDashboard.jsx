@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from '../api/api';
-import Header from '../components/Header';
+import API from '../api/api'; // Adjust the path as neededimport Header from '../components/Header';
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
 import { jwtDecode } from 'jwt-decode';
@@ -17,7 +16,7 @@ const EmployeeDashboard = () => {
 
   const fetchTasks = async () => {
     try {
-      const res = await axios.get(`/tasks/employee/${userId}`, {
+      const res = await API.get(`/tasks/employee/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTasks(res.data.tasks || []);

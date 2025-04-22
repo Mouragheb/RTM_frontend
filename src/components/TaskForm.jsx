@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from '../api/api';
+import API from '../api/api'; // Adjust the path as needed
 
 const TaskForm = ({ token, onTaskCreated }) => {
   const [form, setForm] = useState({
@@ -17,7 +17,7 @@ const TaskForm = ({ token, onTaskCreated }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('/tasks/create', form, {
+      await API.post('/tasks/create', form, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

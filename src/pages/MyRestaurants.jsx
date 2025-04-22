@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from '../api/api';
-import Header from '../components/Header';
+import API from '../api/api'; // Adjust the path as neededimport Header from '../components/Header';
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
 
@@ -20,7 +19,7 @@ const MyRestaurants = () => {
           return;
         }
 
-        const res = await axios.get('/restaurants/my-restaurants', {
+        const res = await API.get('/restaurants/my-restaurants', {
           headers: { Authorization: `Bearer ${token}` },
         });
 

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from '../api/api';
+import API from '../api/api'; // Adjust the path as needed
 import Header from '../components/Header';
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
@@ -42,7 +42,7 @@ const AddRestaurant = () => {
     }
 
     try {
-      const response = await axios.post('/restaurants/create', formData, {
+      const response = await API.post('/restaurants/create', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${token}`

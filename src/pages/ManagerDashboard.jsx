@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from '../api/api';
-import Header from '../components/Header';
+import API from '../api/api'; // Adjust the path as needed
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
 
@@ -21,9 +20,9 @@ const ManagerDashboard = () => {
       try {
         const headers = { Authorization: `Bearer ${token}` };
         const [resRestaurant, resEmployees, resTasks] = await Promise.all([
-          axios.get(`/restaurants/${restaurantId}`, { headers }),
-          axios.get('/auth/employees', { headers }),
-          axios.get(`/tasks/restaurant/${restaurantId}`, { headers }),
+          API.get(`/restaurants/${restaurantId}`, { headers }),
+          API.get('/auth/employees', { headers }),
+          API.get(`/tasks/restaurant/${restaurantId}`, { headers }),
         ]);
         setRestaurant(resRestaurant.data);
         setEmployees(resEmployees.data.employees || []);
@@ -48,7 +47,7 @@ const ManagerDashboard = () => {
   const handleDeleteTask = async (taskId) => {
     if (window.confirm('Delete this task?')) {
       try {
-        await axios.delete(`/tasks/${taskId}`, {
+        await API.delete(`/tasks/${taskId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setTasks((prev) => prev.filter((t) => t._id !== taskId));
@@ -61,7 +60,7 @@ const ManagerDashboard = () => {
   const handleDeleteRestaurant = async () => {
     if (window.confirm('Delete this restaurant?')) {
       try {
-        await axios.delete(`/restaurants/${restaurantId}`, {
+        await API.delete(`/restaurants/${restaurantId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         navigate('/my-restaurants');

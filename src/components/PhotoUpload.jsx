@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import axios from '../api/api';
-
+import API from '../api/api'; // Adjust the path as needed
 const PhotoUpload = ({ taskId, token, onCompleted }) => {
   const [file, setFile] = useState(null);
 
@@ -16,7 +15,7 @@ const PhotoUpload = ({ taskId, token, onCompleted }) => {
     formData.append('photo', file);
 
     try {
-      await axios.put(`/tasks/${taskId}/complete`, formData, {
+      await API.put(`/tasks/${taskId}/complete`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',

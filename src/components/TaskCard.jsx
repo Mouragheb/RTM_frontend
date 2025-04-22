@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import axios from '../api/api';
-
+import API from '../api/api'; // Adjust the path as needed
 const TaskCard = ({ task, onComplete }) => {
   const [completionImage, setCompletionImage] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -18,7 +17,7 @@ const TaskCard = ({ task, onComplete }) => {
     try {
       setUploading(true);
       const token = localStorage.getItem('token');
-      await axios.put(`/tasks/${task._id}/complete`, formData, {
+      await API.put(`/tasks/${task._id}/complete`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
