@@ -55,7 +55,7 @@ const AddRestaurant = () => {
         navigate('/my-restaurants');
       }, 1500);
     } catch (err) {
-      console.error('Add restaurant error:', err);
+      console.error('Add restaurant error:', err.response?.data || err.message || err);
       setError(err.response?.data?.message || 'Failed to add restaurant');
     }
   };
