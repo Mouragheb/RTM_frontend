@@ -4,7 +4,8 @@ import API from '../api/api';
 import Header from '../components/Header';
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
-import { BASE_IMAGE_URL } from '../utils/constants'; // new import
+import { BASE_IMAGE_URL } from '../utils/constants';
+import { jwtDecode } from 'jwt-decode';
 
 const ManagerDashboard = () => {
   const { id: restaurantId } = useParams();
@@ -15,7 +16,32 @@ const ManagerDashboard = () => {
   const [view, setView] = useState('active');
   const [loading, setLoading] = useState(true);
   const [copySuccess, setCopySuccess] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [managerName, setManagerName] = useState('');
+  const [myRestaurants, setMyRestaurants] = useState([]);
+
   const token = localStorage.getItem('token');
+
+  useEffect(() => {
+    if (token) {
+      const decoded = jwtDecode(token);
+      setManagerName(decoded.name || 'Manager');
+    }
+  }, [token]);
+
+  useEffect(() => {
+    const fetchMyRestaurants = async () => {
+      try {
+        const res = await API.get('/api/restaurants/my-restaurants', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setMyRestaurants(res.data.restaurants || []);
+      } catch (err) {
+        console.error('Failed to fetch manager restaurants:', err);
+      }
+    };
+    fetchMyRestaurants();
+  }, [token]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -88,6 +114,33 @@ const ManagerDashboard = () => {
     <div>
       <Header />
       <Nav />
+
+      <div style={styles.topRight}>
+        <button onClick={() => setSidebarOpen(!sidebarOpen)} style={styles.nameButton}>
+          {managerName}
+        </button>
+      </div>
+
+      {sidebarOpen && (
+        <div style={styles.sidebar}>
+          <h3 style={{ marginBottom: '10px' }}>My Restaurants</h3>
+          <ul style={{ listStyle: 'none', padding: 0 }}>
+            {myRestaurants.map((r) => (
+              <li
+                key={r._id}
+                onClick={() => {
+                  navigate(`/restaurant/${r._id}/dashboard`);
+                  setSidebarOpen(false);
+                }}
+                style={styles.sidebarLink}
+              >
+                {r.name}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <main style={styles.container}>
         <h2>Manager Dashboard</h2>
         {loading ? (
@@ -218,7 +271,6 @@ const ManagerDashboard = () => {
   );
 };
 
-// styles (unchanged)
 const styles = {
   container: { padding: '40px', textAlign: 'center' },
   card: { border: '1px solid #ccc', borderRadius: '8px', padding: '20px', maxWidth: '400px', margin: '0 auto', backgroundColor: '#f9f9f9' },
@@ -238,6 +290,10 @@ const styles = {
   taskGrid: { display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center' },
   taskCard: { width: '280px', backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '8px', padding: '15px', textAlign: 'left' },
   taskPhoto: { width: '100%', marginTop: '10px', borderRadius: '4px' },
+  topRight: { position: 'absolute', top: 20, right: 20 },
+  nameButton: { backgroundColor: '#007bff', color: 'white', border: 'none', padding: '8px 12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' },
+  sidebar: { position: 'fixed', top: 0, left: 0, width: '250px', height: '100vh', backgroundColor: '#f8f9fa', padding: '20px', boxShadow: '2px 0 5px rgba(0,0,0,0.1)', zIndex: 999 },
+  sidebarLink: { padding: '8px 0', cursor: 'pointer', color: '#007bff', fontWeight: 'bold' }
 };
 
 export default ManagerDashboard;
