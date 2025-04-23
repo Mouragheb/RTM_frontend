@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import API from '../api/api';
 
-const TaskCard = ({ task, onComplete, baseUrl }) => {
+const TaskCard = ({ task, onComplete, baseUrl = '' }) => {
   const [completionImage, setCompletionImage] = useState(null);
   const [uploading, setUploading] = useState(false);
 
@@ -24,8 +24,7 @@ const TaskCard = ({ task, onComplete, baseUrl }) => {
           'Content-Type': 'multipart/form-data',
         },
       });
-
-      onComplete?.(); // Refresh task list
+      onComplete?.();
     } catch (err) {
       console.error('Error marking task complete:', err);
       alert('Failed to complete task.');
@@ -34,12 +33,8 @@ const TaskCard = ({ task, onComplete, baseUrl }) => {
     }
   };
 
-  // Helper to build the full image URL
-  const getImageUrl = (path) => {
-    if (!path) return '';
-    if (baseUrl) return `${baseUrl}/${path}`;
-    return `http://localhost:8080/${path}`;
-  };
+  // Construct image URLs using baseUrl if provided
+  const getImageUrl = (path) => (path ? `${baseUrl}/${path}` : null);
 
   return (
     <div style={styles.card}>
