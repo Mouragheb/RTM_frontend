@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import API from '../api/api'; // Adjust the path as needed
-const TaskCard = ({ task, onComplete }) => {
+import API from '../api/api';
+
+const TaskCard = ({ task, onComplete, baseUrl }) => {
   const [completionImage, setCompletionImage] = useState(null);
   const [uploading, setUploading] = useState(false);
 
@@ -33,6 +34,13 @@ const TaskCard = ({ task, onComplete }) => {
     }
   };
 
+  // Helper to build the full image URL
+  const getImageUrl = (path) => {
+    if (!path) return '';
+    if (baseUrl) return `${baseUrl}/${path}`;
+    return `http://localhost:8080/${path}`;
+  };
+
   return (
     <div style={styles.card}>
       <h4>{task.title}</h4>
@@ -48,7 +56,7 @@ const TaskCard = ({ task, onComplete }) => {
               <div>
                 <p><strong>Before:</strong></p>
                 <img
-                  src={`http://localhost:8080/${task.photoBefore}`}
+                  src={getImageUrl(task.photoBefore)}
                   alt="Before"
                   style={styles.image}
                 />
@@ -58,7 +66,7 @@ const TaskCard = ({ task, onComplete }) => {
               <div>
                 <p><strong>After:</strong></p>
                 <img
-                  src={`http://localhost:8080/${task.photoAfter}`}
+                  src={getImageUrl(task.photoAfter)}
                   alt="After"
                   style={styles.image}
                 />
@@ -70,7 +78,7 @@ const TaskCard = ({ task, onComplete }) => {
             <div>
               <p><strong>Task Image:</strong></p>
               <img
-                src={`http://localhost:8080/${task.photoBefore}`}
+                src={getImageUrl(task.photoBefore)}
                 alt="Task"
                 style={styles.image}
               />
@@ -79,7 +87,6 @@ const TaskCard = ({ task, onComplete }) => {
         )}
       </div>
 
-      {/* Upload + Button section */}
       {!task.completed && (
         <div style={styles.uploadSection}>
           <input type="file" accept="image/*" onChange={handleFileChange} />

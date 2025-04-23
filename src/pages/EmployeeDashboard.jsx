@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import API from '../api/api'; // Fixed import line
+import API from '../api/api';
 import Header from '../components/Header';
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
@@ -36,6 +36,8 @@ const EmployeeDashboard = () => {
   const completedTasks = tasks.filter((t) => t.status === 'completed');
   const shownTasks = view === 'active' ? activeTasks : completedTasks;
 
+  const backendBaseUrl = 'https://rtm-backend-m2j6.onrender.com'; // Replace with your actual backend URL
+
   return (
     <div>
       <Header />
@@ -65,7 +67,12 @@ const EmployeeDashboard = () => {
         ) : (
           <div style={styles.taskGrid}>
             {shownTasks.map((task) => (
-              <TaskCard key={task._id} task={task} onComplete={fetchTasks} />
+              <TaskCard
+                key={task._id}
+                task={task}
+                onComplete={fetchTasks}
+                baseUrl={backendBaseUrl}
+              />
             ))}
           </div>
         )}
