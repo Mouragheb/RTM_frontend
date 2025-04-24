@@ -85,6 +85,19 @@ const ManagerDashboard = () => {
     }
   };
 
+  const handleDeleteEmployee = async (employeeId) => {
+    if (window.confirm('Delete this employee?')) {
+      try {
+        await API.delete(`/api/auth/employee/${employeeId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setEmployees((prev) => prev.filter((e) => e._id !== employeeId));
+      } catch (err) {
+        console.error('Failed to delete employee:', err);
+      }
+    }
+  };
+
   const handleDeleteRestaurant = async () => {
     if (window.confirm('Delete this restaurant?')) {
       try {
@@ -116,7 +129,10 @@ const ManagerDashboard = () => {
       <Nav />
 
       <div style={styles.topRight}>
-        <button onClick={() => setSidebarOpen(!sidebarOpen)} style={styles.nameButton}>
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          style={styles.nameButton}
+        >
           {managerName}
         </button>
       </div>
@@ -180,6 +196,12 @@ const ManagerDashboard = () => {
                       }
                     >
                       + Add Task
+                    </button>
+                    <button
+                      style={styles.deleteButton}
+                      onClick={() => handleDeleteEmployee(emp._id)}
+                    >
+                      Delete
                     </button>
                   </div>
                 </li>
@@ -273,6 +295,28 @@ const ManagerDashboard = () => {
 
 const styles = {
   container: { padding: '40px', textAlign: 'center' },
+  topRight: {
+    position: 'absolute',
+    top: 15,
+    right: 15,
+  },
+  nameButton: {
+    backgroundColor: '#007bff',
+    color: 'white',
+    border: 'none',
+    padding: '10px',
+    borderRadius: '50%',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+    width: '40px',
+    height: '40px',
+    fontSize: '0.8rem',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
+  sidebar: { position: 'fixed', top: 0, left: 0, width: '250px', height: '100vh', backgroundColor: '#f8f9fa', padding: '20px', boxShadow: '2px 0 5px rgba(0,0,0,0.1)', zIndex: 999 },
+  sidebarLink: { padding: '8px 0', cursor: 'pointer', color: '#007bff', fontWeight: 'bold' },
   card: { border: '1px solid #ccc', borderRadius: '8px', padding: '20px', maxWidth: '400px', margin: '0 auto', backgroundColor: '#f9f9f9' },
   logo: { width: '100px', height: '100px', objectFit: 'contain', marginBottom: '10px' },
   idBox: { marginTop: '15px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px' },
@@ -282,7 +326,7 @@ const styles = {
   employeeList: { listStyleType: 'none', padding: 0, marginTop: '20px' },
   employeeItem: { padding: '10px', backgroundColor: '#eee', borderRadius: '5px', marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
   taskButton: { padding: '5px 10px', marginRight: '8px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '4px', fontSize: '12px', cursor: 'pointer' },
-  deleteButton: { padding: '5px 10px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '4px', fontSize: '12px', cursor: 'pointer', marginTop: '8px' },
+  deleteButton: { padding: '5px 10px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '4px', fontSize: '12px', cursor: 'pointer', marginTop: '5px' },
   archiveBtn: { padding: '5px 10px', backgroundColor: '#6c757d', color: 'white', border: 'none', borderRadius: '4px', fontSize: '12px', cursor: 'pointer', marginTop: '5px' },
   toggleButtons: { display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '20px' },
   activeToggle: { backgroundColor: '#007bff', color: 'white', padding: '8px 12px', border: 'none', borderRadius: '4px', fontWeight: 'bold' },
@@ -290,10 +334,7 @@ const styles = {
   taskGrid: { display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center' },
   taskCard: { width: '280px', backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '8px', padding: '15px', textAlign: 'left' },
   taskPhoto: { width: '100%', marginTop: '10px', borderRadius: '4px' },
-  topRight: { position: 'absolute', top: 20, right: 20 },
-  nameButton: { backgroundColor: '#007bff', color: 'white', border: 'none', padding: '8px 12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' },
-  sidebar: { position: 'fixed', top: 0, left: 0, width: '250px', height: '100vh', backgroundColor: '#f8f9fa', padding: '20px', boxShadow: '2px 0 5px rgba(0,0,0,0.1)', zIndex: 999 },
-  sidebarLink: { padding: '8px 0', cursor: 'pointer', color: '#007bff', fontWeight: 'bold' }
+  imagesRow: { display: 'flex', gap: '10px' }
 };
 
 export default ManagerDashboard;
