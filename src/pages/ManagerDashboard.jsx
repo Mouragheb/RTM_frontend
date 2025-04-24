@@ -17,7 +17,7 @@ const ManagerDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [copySuccess, setCopySuccess] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [managerName, setManagerName] = useState('Manager');
+  const [managerName, setManagerName] = useState('');
   const [myRestaurants, setMyRestaurants] = useState([]);
 
   const token = localStorage.getItem('token');
@@ -116,17 +116,14 @@ const ManagerDashboard = () => {
       <Nav />
 
       <div style={styles.topRight}>
-        <button
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          style={styles.nameButton}
-        >
-          {managerName.length > 10 ? managerName.slice(0, 1) : managerName}
+        <button onClick={() => setSidebarOpen(!sidebarOpen)} style={styles.nameButton}>
+          {managerName}
         </button>
       </div>
 
       {sidebarOpen && (
         <div style={styles.sidebar}>
-          <h3>My Restaurants</h3>
+          <h3 style={{ marginBottom: '10px' }}>My Restaurants</h3>
           <ul style={{ listStyle: 'none', padding: 0 }}>
             {myRestaurants.map((r) => (
               <li
@@ -146,9 +143,129 @@ const ManagerDashboard = () => {
 
       <main style={styles.container}>
         <h2>Manager Dashboard</h2>
-        {/* ...rest unchanged */}
-      </main>
+        {loading ? (
+          <p>Loading data...</p>
+        ) : restaurant ? (
+          <>
+            <div style={styles.card}>
+              <img
+                src={`${BASE_IMAGE_URL}/${restaurant.logo}`}
+                alt="Restaurant Logo"
+                style={styles.logo}
+              />
+              <h3>{restaurant.name}</h3>
+              <p>{restaurant.address}</p>
+              <div style={styles.idBox}>
+                <span><strong>ID:</strong> {restaurantId}</span>
+                <button onClick={copyToClipboard} style={styles.copyBtn}>
+                  Copy ID
+                </button>
+                {copySuccess && <small style={styles.copiedText}>{copySuccess}</small>}
+              </div>
+              <button onClick={handleDeleteRestaurant} style={styles.deleteRestaurantBtn}>
+                Remove Restaurant
+              </button>
+            </div>
 
+            <h3 style={{ marginTop: '40px' }}>Employees</h3>
+            <ul style={styles.employeeList}>
+              {filteredEmployees.map((emp) => (
+                <li key={emp._id} style={styles.employeeItem}>
+                  <span>{emp.name}</span>
+                  <div>
+                    <button
+                      style={styles.taskButton}
+                      onClick={() =>
+                        navigate(`/restaurant/${restaurantId}/employee/${emp._id}/add-task`)
+                      }
+                    >
+                      + Add Task
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            <div style={{ marginTop: '40px' }}>
+              <h3>Tasks</h3>
+              <div style={styles.toggleButtons}>
+                <button
+                  onClick={() => setView('active')}
+                  style={view === 'active' ? styles.activeToggle : styles.inactiveToggle}
+                >
+                  Active Tasks
+                </button>
+                <button
+                  onClick={() => setView('completed')}
+                  style={view === 'completed' ? styles.activeToggle : styles.inactiveToggle}
+                >
+                  Completed Tasks
+                </button>
+              </div>
+
+              {shownTasks.length === 0 ? (
+                <p>No tasks in this view.</p>
+              ) : (
+                <div style={styles.taskGrid}>
+                  {shownTasks.map((task) => (
+                    <div key={task._id} style={styles.taskCard}>
+                      <h4>{task.title}</h4>
+                      <p><strong>Status:</strong> {task.status}</p>
+                      <p><strong>Assigned:</strong> {task.assignedTo?.name || 'N/A'}</p>
+                      <p><strong>Due:</strong> {task.dueDate ? task.dueDate.slice(0, 10) : '—'}</p>
+                      <p><strong>Description:</strong> {task.description || 'None'}</p>
+                      {task.status === 'completed' ? (
+                        <div style={styles.imagesRow}>
+                          {task.photoBefore && (
+                            <div>
+                              <p><strong>Before:</strong></p>
+                              <img
+                                src={`${BASE_IMAGE_URL}/${task.photoBefore}`}
+                                alt="Before"
+                                style={styles.taskPhoto}
+                              />
+                            </div>
+                          )}
+                          {task.photoAfter && (
+                            <div>
+                              <p><strong>After:</strong></p>
+                              <img
+                                src={`${BASE_IMAGE_URL}/${task.photoAfter}`}
+                                alt="After"
+                                style={styles.taskPhoto}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        task.photoBefore && (
+                          <div>
+                            <p><strong>Task Image:</strong></p>
+                            <img
+                              src={`${BASE_IMAGE_URL}/${task.photoBefore}`}
+                              alt="Before"
+                              style={styles.taskPhoto}
+                            />
+                          </div>
+                        )
+                      )}
+                      <button
+                        style={styles.deleteButton}
+                        onClick={() => handleDeleteTask(task._id)}
+                      >
+                        Delete
+                      </button>
+                      <button style={styles.archiveBtn}>Archive</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </>
+        ) : (
+          <p>Restaurant not found.</p>
+        )}
+      </main>
       <Footer />
     </div>
   );
@@ -173,44 +290,10 @@ const styles = {
   taskGrid: { display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center' },
   taskCard: { width: '280px', backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '8px', padding: '15px', textAlign: 'left' },
   taskPhoto: { width: '100%', marginTop: '10px', borderRadius: '4px' },
-  topRight: {
-    position: 'absolute',
-    top: 15,
-    right: 15,
-    zIndex: 999,
-  },
-  nameButton: {
-    backgroundColor: '#007bff',
-    color: 'white',
-    border: 'none',
-    borderRadius: '50%',
-    width: '40px',
-    height: '40px',
-    fontSize: '14px',
-    cursor: 'pointer',
-    fontWeight: 'bold',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  sidebar: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    width: '260px',
-    height: '100vh',
-    backgroundColor: '#fff',
-    padding: '20px',
-    boxShadow: '2px 0 6px rgba(0,0,0,0.2)',
-    zIndex: 999,
-  },
-  sidebarLink: {
-    padding: '10px 0',
-    borderBottom: '1px solid #ddd',
-    cursor: 'pointer',
-    color: '#007bff',
-    fontWeight: 'bold',
-  }
+  topRight: { position: 'absolute', top: 20, right: 20 },
+  nameButton: { backgroundColor: '#007bff', color: 'white', border: 'none', padding: '8px 12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' },
+  sidebar: { position: 'fixed', top: 0, left: 0, width: '250px', height: '100vh', backgroundColor: '#f8f9fa', padding: '20px', boxShadow: '2px 0 5px rgba(0,0,0,0.1)', zIndex: 999 },
+  sidebarLink: { padding: '8px 0', cursor: 'pointer', color: '#007bff', fontWeight: 'bold' }
 };
 
 export default ManagerDashboard;
