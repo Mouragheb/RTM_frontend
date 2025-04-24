@@ -4,7 +4,9 @@ import logo from '/logo.png'; // adjust path if needed
 
 const Header = () => {
   return (
+    
     <header style={styles.headerContainer}>
+      <h1 className="text-3xl font-bold text-blue-600">Hello Tailwind</h1>
       <img src={logo} alt="RTM Logo" style={styles.logo} />
       <h1 style={styles.title}>Restaurant Task Manager</h1>
     </header>
