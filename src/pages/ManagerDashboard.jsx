@@ -19,6 +19,11 @@ const ManagerDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [managerName, setManagerName] = useState('');
   const [myRestaurants, setMyRestaurants] = useState([]);
+  const [restaurantsDropdown, setRestaurantsDropdown] = useState(false);
+  const [employeesDropdown, setEmployeesDropdown] = useState(false);
+  const [tasksDropdown, setTasksDropdown] = useState(false);
+  const [activeTasksDropdown, setActiveTasksDropdown] = useState(false);
+  const [completedTasksDropdown, setCompletedTasksDropdown] = useState(false);
 
   const token = localStorage.getItem('token');
 
@@ -32,7 +37,7 @@ const ManagerDashboard = () => {
   useEffect(() => {
     const fetchMyRestaurants = async () => {
       try {
-        const res = await API.get('/api/restaurants/my-restaurants', {
+        const res = await API.get('/restaurants/my-restaurants', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setMyRestaurants(res.data.restaurants || []);
@@ -48,9 +53,9 @@ const ManagerDashboard = () => {
       try {
         const headers = { Authorization: `Bearer ${token}` };
         const [resRestaurant, resEmployees, resTasks] = await Promise.all([
-          API.get(`/api/restaurants/${restaurantId}`, { headers }),
-          API.get('/api/auth/employees', { headers }),
-          API.get(`/api/tasks/restaurant/${restaurantId}`, { headers }),
+          API.get(`/restaurants/${restaurantId}`, { headers }),
+          API.get('/auth/employees', { headers }),
+          API.get(`/tasks/restaurant/${restaurantId}`, { headers }),
         ]);
         setRestaurant(resRestaurant.data);
         setEmployees(resEmployees.data.employees || []);
@@ -75,7 +80,7 @@ const ManagerDashboard = () => {
   const handleDeleteTask = async (taskId) => {
     if (window.confirm('Delete this task?')) {
       try {
-        await API.delete(`/api/tasks/${taskId}`, {
+        await API.delete(`/tasks/${taskId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setTasks((prev) => prev.filter((t) => t._id !== taskId));
@@ -88,7 +93,7 @@ const ManagerDashboard = () => {
   const handleDeleteEmployee = async (employeeId) => {
     if (window.confirm('Delete this employee?')) {
       try {
-        await API.delete(`/api/auth/employee/${employeeId}`, {
+        await API.delete(`/auth/employees/${employeeId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setEmployees((prev) => prev.filter((e) => e._id !== employeeId));
@@ -101,7 +106,7 @@ const ManagerDashboard = () => {
   const handleDeleteRestaurant = async () => {
     if (window.confirm('Delete this restaurant?')) {
       try {
-        await API.delete(`/api/restaurants/${restaurantId}`, {
+        await API.delete(`/restaurants/${restaurantId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         navigate('/my-restaurants');
@@ -114,7 +119,7 @@ const ManagerDashboard = () => {
   const filteredEmployees = employees.filter((emp) => {
     const empRestaurantId =
       typeof emp.restaurant === 'object'
-        ? emp.restaurant._id?.toString()
+        ? emp.restaurant?._id?.toString()
         : emp.restaurant?.toString();
     return empRestaurantId === restaurantId;
   });
@@ -123,103 +128,237 @@ const ManagerDashboard = () => {
   const completedTasks = tasks.filter((t) => t.status === 'completed');
   const shownTasks = view === 'active' ? activeTasks : completedTasks;
 
+  const scrollToTask = (taskId) => {
+    const element = document.getElementById(`task-${taskId}`);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setSidebarOpen(false);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    window.location.href = '/login';
+  };
+
   return (
     <div>
       <Header />
       <Nav />
 
-      <div style={styles.topRight}>
+      {/* Manager name button */}
+      <div className="absolute top-4 right-4 z-50">
         <button
+          className="bg-blue-600 text-white font-bold text-sm flex items-center justify-center rounded-full px-4 py-2 md:px-6 md:py-2 md:rounded-md md:text-base"
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          style={styles.nameButton}
         >
-          {managerName}
+          <span className="block md:hidden">
+            {managerName.split(' ').map((n) => n[0]).join('')}
+          </span>
+          <span className="hidden md:block">
+            {managerName}
+          </span>
         </button>
       </div>
 
+      {/* Sidebar */}
       {sidebarOpen && (
-        <div style={styles.sidebar}>
-          <h3 style={{ marginBottom: '10px' }}>My Restaurants</h3>
-          <ul style={{ listStyle: 'none', padding: 0 }}>
-            {myRestaurants.map((r) => (
-              <li
-                key={r._id}
-                onClick={() => {
-                  navigate(`/restaurant/${r._id}/dashboard`);
-                  setSidebarOpen(false);
-                }}
-                style={styles.sidebarLink}
-              >
-                {r.name}
-              </li>
-            ))}
-          </ul>
+        <div className="absolute top-16 right-4 bg-white shadow-lg rounded-lg p-4 w-64 space-y-4 z-50 max-h-[80vh] overflow-y-auto">
+          <h3 className="text-xl font-bold text-center text-gray-800">{managerName}</h3>
+
+          {/* My Restaurants Dropdown */}
+          <div>
+            <button
+              onClick={() => setRestaurantsDropdown(!restaurantsDropdown)}
+              className="text-blue-600 font-semibold w-full text-left"
+            >
+              My Restaurants {restaurantsDropdown ? '▲' : '▼'}
+            </button>
+            {restaurantsDropdown && (
+              <ul className="ml-4 mt-2 space-y-1">
+                {myRestaurants.map((r) => (
+                  <li key={r._id}>
+                    <button
+                      onClick={() => {
+                        navigate(`/restaurant/${r._id}/dashboard`);
+                        setSidebarOpen(false);
+                      }}
+                      className="text-sm text-gray-700 hover:underline"
+                    >
+                      {r.name}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          {/* Employees Dropdown */}
+          <div>
+            <button
+              onClick={() => setEmployeesDropdown(!employeesDropdown)}
+              className="text-green-600 font-semibold w-full text-left"
+            >
+              Employees {employeesDropdown ? '▲' : '▼'}
+            </button>
+            {employeesDropdown && (
+              <ul className="ml-4 mt-2 space-y-1">
+                {filteredEmployees.map((emp) => (
+                  <li key={emp._id} className="text-sm text-gray-700">
+                    {emp.name}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          {/* Tasks Dropdown */}
+          <div>
+            <button
+              onClick={() => setTasksDropdown(!tasksDropdown)}
+              className="text-purple-600 font-semibold w-full text-left"
+            >
+              Tasks {tasksDropdown ? '▲' : '▼'}
+            </button>
+            {tasksDropdown && (
+              <div className="ml-4 mt-2 space-y-2">
+                {/* Active Tasks */}
+                <div>
+                  <button
+                    onClick={() => setActiveTasksDropdown(!activeTasksDropdown)}
+                    className="text-blue-500 font-semibold w-full text-left"
+                  >
+                    Active Tasks {activeTasksDropdown ? '▲' : '▼'}
+                  </button>
+                  {activeTasksDropdown && (
+                    <ul className="ml-4 mt-1 space-y-1">
+                      {activeTasks.map((task) => (
+                        <li key={task._id}>
+                          <button
+                            onClick={() => scrollToTask(task._id)}
+                            className="text-sm text-gray-700 hover:underline"
+                          >
+                            {task.title}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+
+                {/* Completed Tasks */}
+                <div>
+                  <button
+                    onClick={() => setCompletedTasksDropdown(!completedTasksDropdown)}
+                    className="text-green-500 font-semibold w-full text-left"
+                  >
+                    Completed Tasks {completedTasksDropdown ? '▲' : '▼'}
+                  </button>
+                  {completedTasksDropdown && (
+                    <ul className="ml-4 mt-1 space-y-1">
+                      {completedTasks.map((task) => (
+                        <li key={task._id}>
+                          <button
+                            onClick={() => scrollToTask(task._id)}
+                            className="text-sm text-gray-700 hover:underline"
+                          >
+                            {task.title}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Logout */}
+          <div className="pt-4">
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded w-full"
+            >
+              Logout
+            </button>
+          </div>
         </div>
       )}
 
-      <main style={styles.container}>
-        <h2>Manager Dashboard</h2>
+      {/* MAIN CONTENT */}
+      <main className="p-6 text-center">
+        <h2 className="text-2xl font-bold mb-6">Manager Dashboard</h2>
+
         {loading ? (
           <p>Loading data...</p>
         ) : restaurant ? (
           <>
-            <div style={styles.card}>
+            {/* Restaurant Info */}
+            <div className="mx-auto max-w-md bg-gray-100 p-6 rounded-md shadow-md">
               <img
                 src={`${BASE_IMAGE_URL}/${restaurant.logo}`}
                 alt="Restaurant Logo"
-                style={styles.logo}
+                className="w-24 h-24 mx-auto object-contain mb-3"
               />
-              <h3>{restaurant.name}</h3>
+              <h3 className="text-xl font-semibold">{restaurant.name}</h3>
               <p>{restaurant.address}</p>
-              <div style={styles.idBox}>
-                <span><strong>ID:</strong> {restaurantId}</span>
-                <button onClick={copyToClipboard} style={styles.copyBtn}>
+              <div className="flex justify-center items-center gap-3 mt-3">
+                <span className="text-sm text-gray-700"><strong>ID:</strong> {restaurantId}</span>
+                <button onClick={copyToClipboard} className="text-sm bg-blue-500 text-white px-2 py-1 rounded">
                   Copy ID
                 </button>
-                {copySuccess && <small style={styles.copiedText}>{copySuccess}</small>}
+                {copySuccess && <small className="text-green-600">{copySuccess}</small>}
               </div>
-              <button onClick={handleDeleteRestaurant} style={styles.deleteRestaurantBtn}>
+              <button
+                onClick={handleDeleteRestaurant}
+                className="mt-4 bg-red-600 text-white py-2 px-4 rounded"
+              >
                 Remove Restaurant
               </button>
             </div>
 
-            <h3 style={{ marginTop: '40px' }}>Employees</h3>
-            <ul style={styles.employeeList}>
-              {filteredEmployees.map((emp) => (
-                <li key={emp._id} style={styles.employeeItem}>
-                  <span>{emp.name}</span>
-                  <div>
-                    <button
-                      style={styles.taskButton}
-                      onClick={() =>
-                        navigate(`/restaurant/${restaurantId}/employee/${emp._id}/add-task`)
-                      }
-                    >
-                      + Add Task
-                    </button>
-                    <button
-                      style={styles.deleteButton}
-                      onClick={() => handleDeleteEmployee(emp._id)}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
+            {/* Employees */}
+            <div className="mt-10">
+              <h3 className="text-xl font-semibold mb-4">Employees</h3>
+              <ul className="space-y-3">
+                {filteredEmployees.map((emp) => (
+                  <li
+                    key={emp._id}
+                    className="bg-gray-200 flex justify-between items-center px-4 py-2 rounded-md"
+                  >
+                    <span>{emp.name}</span>
+                    <div className="space-x-2">
+                      <button
+                        onClick={() => navigate(`/restaurant/${restaurantId}/employee/${emp._id}/add-task`)}
+                        className="bg-green-600 text-white px-2 py-1 rounded text-sm"
+                      >
+                        + Add Task
+                      </button>
+                      <button
+                        onClick={() => handleDeleteEmployee(emp._id)}
+                        className="bg-red-500 text-white px-2 py-1 rounded text-sm"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-            <div style={{ marginTop: '40px' }}>
-              <h3>Tasks</h3>
-              <div style={styles.toggleButtons}>
+            {/* Tasks */}
+            <div className="mt-10">
+              <h3 className="text-xl font-semibold mb-4">Tasks</h3>
+              <div className="flex justify-center gap-4 mb-6">
                 <button
                   onClick={() => setView('active')}
-                  style={view === 'active' ? styles.activeToggle : styles.inactiveToggle}
+                  className={`px-4 py-2 rounded ${view === 'active' ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-700'}`}
                 >
                   Active Tasks
                 </button>
                 <button
                   onClick={() => setView('completed')}
-                  style={view === 'completed' ? styles.activeToggle : styles.inactiveToggle}
+                  className={`px-4 py-2 rounded ${view === 'completed' ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-700'}`}
                 >
                   Completed Tasks
                 </button>
@@ -228,56 +367,50 @@ const ManagerDashboard = () => {
               {shownTasks.length === 0 ? (
                 <p>No tasks in this view.</p>
               ) : (
-                <div style={styles.taskGrid}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {shownTasks.map((task) => (
-                    <div key={task._id} style={styles.taskCard}>
-                      <h4>{task.title}</h4>
+                    <div key={task._id} id={`task-${task._id}`} className="bg-white border p-4 rounded shadow-sm text-left">
+                      <h4 className="font-bold">{task.title}</h4>
                       <p><strong>Status:</strong> {task.status}</p>
                       <p><strong>Assigned:</strong> {task.assignedTo?.name || 'N/A'}</p>
-                      <p><strong>Due:</strong> {task.dueDate ? task.dueDate.slice(0, 10) : '—'}</p>
+                      <p><strong>Due:</strong> {task.dueDate?.slice(0, 10) || '—'}</p>
                       <p><strong>Description:</strong> {task.description || 'None'}</p>
+                      {/* Photos */}
                       {task.status === 'completed' ? (
-                        <div style={styles.imagesRow}>
+                        <div className="flex gap-3 mt-2">
                           {task.photoBefore && (
                             <div>
-                              <p><strong>Before:</strong></p>
-                              <img
-                                src={`${BASE_IMAGE_URL}/${task.photoBefore}`}
-                                alt="Before"
-                                style={styles.taskPhoto}
-                              />
+                              <p className="font-medium">Before:</p>
+                              <img src={`${BASE_IMAGE_URL}/${task.photoBefore}`} alt="Before" className="rounded w-full" />
                             </div>
                           )}
                           {task.photoAfter && (
                             <div>
-                              <p><strong>After:</strong></p>
-                              <img
-                                src={`${BASE_IMAGE_URL}/${task.photoAfter}`}
-                                alt="After"
-                                style={styles.taskPhoto}
-                              />
+                              <p className="font-medium">After:</p>
+                              <img src={`${BASE_IMAGE_URL}/${task.photoAfter}`} alt="After" className="rounded w-full" />
                             </div>
                           )}
                         </div>
                       ) : (
                         task.photoBefore && (
-                          <div>
-                            <p><strong>Task Image:</strong></p>
-                            <img
-                              src={`${BASE_IMAGE_URL}/${task.photoBefore}`}
-                              alt="Before"
-                              style={styles.taskPhoto}
-                            />
+                          <div className="mt-2">
+                            <p className="font-medium">Task Image:</p>
+                            <img src={`${BASE_IMAGE_URL}/${task.photoBefore}`} alt="Before" className="rounded w-full" />
                           </div>
                         )
                       )}
-                      <button
-                        style={styles.deleteButton}
-                        onClick={() => handleDeleteTask(task._id)}
-                      >
-                        Delete
-                      </button>
-                      <button style={styles.archiveBtn}>Archive</button>
+                      {/* Buttons */}
+                      <div className="flex gap-2 mt-4">
+                        <button
+                          onClick={() => handleDeleteTask(task._id)}
+                          className="bg-red-500 text-white px-3 py-1 rounded text-sm"
+                        >
+                          Delete
+                        </button>
+                        <button className="bg-gray-500 text-white px-3 py-1 rounded text-sm">
+                          Archive
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -288,53 +421,10 @@ const ManagerDashboard = () => {
           <p>Restaurant not found.</p>
         )}
       </main>
+
       <Footer />
     </div>
   );
-};
-
-const styles = {
-  container: { padding: '40px', textAlign: 'center' },
-  topRight: {
-    position: 'absolute',
-    top: 15,
-    right: 15,
-  },
-  nameButton: {
-    backgroundColor: '#007bff',
-    color: 'white',
-    border: 'none',
-    padding: '10px',
-    borderRadius: '50%',
-    cursor: 'pointer',
-    fontWeight: 'bold',
-    width: '40px',
-    height: '40px',
-    fontSize: '0.8rem',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-  },
-  sidebar: { position: 'fixed', top: 0, left: 0, width: '250px', height: '100vh', backgroundColor: '#f8f9fa', padding: '20px', boxShadow: '2px 0 5px rgba(0,0,0,0.1)', zIndex: 999 },
-  sidebarLink: { padding: '8px 0', cursor: 'pointer', color: '#007bff', fontWeight: 'bold' },
-  card: { border: '1px solid #ccc', borderRadius: '8px', padding: '20px', maxWidth: '400px', margin: '0 auto', backgroundColor: '#f9f9f9' },
-  logo: { width: '100px', height: '100px', objectFit: 'contain', marginBottom: '10px' },
-  idBox: { marginTop: '15px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px' },
-  copyBtn: { padding: '5px 10px', fontSize: '12px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' },
-  copiedText: { color: 'green', fontSize: '12px' },
-  deleteRestaurantBtn: { marginTop: '15px', padding: '8px 12px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '5px', fontSize: '14px', cursor: 'pointer' },
-  employeeList: { listStyleType: 'none', padding: 0, marginTop: '20px' },
-  employeeItem: { padding: '10px', backgroundColor: '#eee', borderRadius: '5px', marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
-  taskButton: { padding: '5px 10px', marginRight: '8px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '4px', fontSize: '12px', cursor: 'pointer' },
-  deleteButton: { padding: '5px 10px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '4px', fontSize: '12px', cursor: 'pointer', marginTop: '5px' },
-  archiveBtn: { padding: '5px 10px', backgroundColor: '#6c757d', color: 'white', border: 'none', borderRadius: '4px', fontSize: '12px', cursor: 'pointer', marginTop: '5px' },
-  toggleButtons: { display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '20px' },
-  activeToggle: { backgroundColor: '#007bff', color: 'white', padding: '8px 12px', border: 'none', borderRadius: '4px', fontWeight: 'bold' },
-  inactiveToggle: { backgroundColor: '#ddd', color: '#333', padding: '8px 12px', border: 'none', borderRadius: '4px' },
-  taskGrid: { display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center' },
-  taskCard: { width: '280px', backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '8px', padding: '15px', textAlign: 'left' },
-  taskPhoto: { width: '100%', marginTop: '10px', borderRadius: '4px' },
-  imagesRow: { display: 'flex', gap: '10px' }
 };
 
 export default ManagerDashboard;

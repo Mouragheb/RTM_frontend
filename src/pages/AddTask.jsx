@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import API from '../api/api'; // Fixed import here
+import API from '../api/api';
 import Header from '../components/Header';
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
@@ -38,10 +38,10 @@ const AddTask = () => {
       formData.append('dueDate', form.dueDate);
       formData.append('frequency', form.frequency);
       formData.append('assignedTo', employeeId);
-      formData.append('restaurant', restaurantId);
+      formData.append('restaurantId', restaurantId); // <-- Corrected key
       if (photo) formData.append('photo', photo);
 
-      await API.post('/api/tasks/create', formData, {
+      await API.post('/tasks/create', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
@@ -60,65 +60,65 @@ const AddTask = () => {
     <div>
       <Header />
       <Nav />
-      <main style={styles.container}>
-        <h2>Assign Task</h2>
-        <form onSubmit={handleSubmit} style={styles.form}>
+      <main className="max-w-xl mx-auto px-4 py-10 text-center">
+        <h2 className="text-2xl font-semibold mb-6">Assign Task</h2>
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-4 bg-white border rounded p-6 shadow"
+        >
           <input
             name="title"
             type="text"
             placeholder="Task Title"
             onChange={handleChange}
             required
+            className="border p-2 rounded"
           />
           <textarea
             name="description"
             placeholder="Task Description"
             rows="4"
             onChange={handleChange}
+            className="border p-2 rounded"
           />
           <input
             name="dueDate"
             type="date"
             onChange={handleChange}
             required
+            className="border p-2 rounded"
           />
-          <select name="frequency" value={form.frequency} onChange={handleChange}>
+          <select
+            name="frequency"
+            value={form.frequency}
+            onChange={handleChange}
+            className="border p-2 rounded"
+          >
             <option value="once">Once</option>
             <option value="daily">Daily</option>
             <option value="weekly">Weekly</option>
           </select>
-          <input type="file" accept="image/*" onChange={handleFileChange} />
-          {error && <p style={styles.error}>{error}</p>}
-          {success && <p style={styles.success}>{success}</p>}
-          <button type="submit">Assign Task</button>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="border p-2 rounded"
+          />
+
+          {error && <p className="text-red-600 font-medium">{error}</p>}
+          {success && <p className="text-green-600 font-medium">{success}</p>}
+
+          <button
+            type="submit"
+            className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition"
+          >
+            Assign Task
+          </button>
         </form>
       </main>
       <Footer />
     </div>
   );
-};
-
-const styles = {
-  container: {
-    padding: '40px',
-    maxWidth: '500px',
-    margin: '0 auto',
-    textAlign: 'center',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '15px',
-    marginTop: '20px',
-  },
-  error: {
-    color: 'red',
-    fontWeight: 'bold',
-  },
-  success: {
-    color: 'green',
-    fontWeight: 'bold',
-  },
 };
 
 export default AddTask;

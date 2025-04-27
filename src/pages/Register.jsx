@@ -27,7 +27,7 @@ const Register = () => {
     setError('');
     setSuccess(false);
     try {
-      await API.post('/api/auth/register', form);
+      await API.post('/auth/register', form);
       setSuccess(true);
       setTimeout(() => navigate('/login'), 1500);
     } catch (err) {
@@ -40,15 +40,16 @@ const Register = () => {
       <Header />
       <Nav />
 
-      <main style={styles.container}>
-        <h2>Register</h2>
-        <form onSubmit={handleSubmit} style={styles.form}>
+      <main className="max-w-md mx-auto px-6 py-10 text-center">
+        <h2 className="text-2xl font-semibold mb-6">Register</h2>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <input
             name="name"
             type="text"
             placeholder="Name"
             onChange={handleChange}
             required
+            className="border border-gray-300 rounded px-4 py-2"
           />
           <input
             name="email"
@@ -56,6 +57,7 @@ const Register = () => {
             placeholder="Email"
             onChange={handleChange}
             required
+            className="border border-gray-300 rounded px-4 py-2"
           />
           <input
             name="password"
@@ -63,8 +65,15 @@ const Register = () => {
             placeholder="Password"
             onChange={handleChange}
             required
+            className="border border-gray-300 rounded px-4 py-2"
           />
-          <select name="role" value={form.role} onChange={handleChange} required>
+          <select
+            name="role"
+            value={form.role}
+            onChange={handleChange}
+            className="border border-gray-300 rounded px-4 py-2"
+            required
+          >
             <option value="manager">Manager</option>
             <option value="employee">Employee</option>
           </select>
@@ -76,42 +85,29 @@ const Register = () => {
               placeholder="Restaurant ID (ask your manager)"
               onChange={handleChange}
               required
+              className="border border-gray-300 rounded px-4 py-2"
             />
           )}
 
-          {error && <p style={styles.error}>{error}</p>}
-          {success && <p style={styles.success}>Registration successful! Redirecting...</p>}
+          {error && <p className="text-red-600 font-semibold">{error}</p>}
+          {success && (
+            <p className="text-green-600 font-semibold">
+              Registration successful! Redirecting...
+            </p>
+          )}
 
-          <button type="submit">Register</button>
+          <button
+            type="submit"
+            className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded"
+          >
+            Register
+          </button>
         </form>
       </main>
 
       <Footer />
     </div>
   );
-};
-
-const styles = {
-  container: {
-    padding: '40px',
-    maxWidth: '450px',
-    margin: '0 auto',
-    textAlign: 'center',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '15px',
-    marginTop: '20px',
-  },
-  error: {
-    color: 'red',
-    fontWeight: 'bold',
-  },
-  success: {
-    color: 'green',
-    fontWeight: 'bold',
-  },
 };
 
 export default Register;

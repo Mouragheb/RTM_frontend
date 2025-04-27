@@ -1,36 +1,19 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import logo from '/logo.png'; // Update the path if needed
 
-import logo from '/logo.png'; // adjust path if needed
-
-const Header = () => {
+function Header() {
   return (
-    
-    <header style={styles.headerContainer}>
-      <h1 className="text-3xl font-bold text-blue-600">Hello Tailwind</h1>
-      <img src={logo} alt="RTM Logo" style={styles.logo} />
-      <h1 style={styles.title}>Restaurant Task Manager</h1>
+    <header className="flex items-center px-4 py-3">
+      <Link to="/">
+        <img 
+          src={logo} 
+          alt="Restaurant Task Manager Logo" 
+          className="h-12 w-auto cursor-pointer"
+        />
+      </Link>
     </header>
   );
-};
-
-const styles = {
-  headerContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    backgroundColor: '#282c34',
-    padding: '10px 20px',
-    color: 'white',
-    borderBottom: '3px solid #ff6347',
-  },
-  logo: {
-    width: '50px',
-    height: '50px',
-    marginRight: '15px',
-  },
-  title: {
-    fontSize: '1.5rem',
-    fontWeight: 'bold',
-  }
-};
+}
 
 export default Header;

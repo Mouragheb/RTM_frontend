@@ -21,7 +21,7 @@ const MyRestaurants = () => {
           return;
         }
 
-        const res = await API.get('/api/restaurants/my-restaurants', {
+        const res = await API.get('/restaurants/my-restaurants', {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -46,32 +46,39 @@ const MyRestaurants = () => {
       <Header />
       <Nav />
 
-      <main style={styles.container}>
-        <h2>My Restaurants</h2>
-        <Link to="/add-restaurant" style={styles.addButton}>+ Add New Restaurant</Link>
+      <main className="p-10 text-center">
+        <h2 className="text-2xl font-bold mb-4">My Restaurants</h2>
+        <Link
+          to="/add-restaurant"
+          className="inline-block mb-6 px-5 py-2 bg-green-600 text-white font-semibold rounded hover:bg-green-700"
+        >
+          + Add New Restaurant
+        </Link>
 
         {loading ? (
           <p>Loading...</p>
         ) : error ? (
-          <p style={styles.error}>{error}</p>
+          <p className="text-red-600 font-semibold">{error}</p>
         ) : restaurants.length === 0 ? (
           <p>No restaurants found.</p>
         ) : (
-          <div style={styles.grid}>
+          <div className="flex flex-wrap justify-center gap-6">
             {restaurants.map((r) => (
               <div
                 key={r._id}
-                style={styles.card}
+                className="w-[250px] p-5 border border-gray-300 rounded bg-gray-50 hover:shadow-md cursor-pointer transition"
                 onClick={() => goToDashboard(r._id)}
               >
                 <img
                   src={`${BASE_IMAGE_URL}/${r.logo}`}
                   alt={r.name}
-                  style={styles.logo}
+                  className="w-20 h-20 object-contain mx-auto mb-3"
                 />
-                <h3>{r.name}</h3>
+                <h3 className="text-lg font-semibold">{r.name}</h3>
                 <p>{r.address}</p>
-                <small style={styles.restaurantId}>ID: {r._id}</small>
+                <small className="block mt-2 text-gray-500 text-sm">
+                  ID: {r._id}
+                </small>
               </div>
             ))}
           </div>
@@ -81,53 +88,6 @@ const MyRestaurants = () => {
       <Footer />
     </div>
   );
-};
-
-const styles = {
-  container: {
-    padding: '40px',
-    textAlign: 'center',
-  },
-  addButton: {
-    display: 'inline-block',
-    marginBottom: '20px',
-    padding: '10px 15px',
-    backgroundColor: '#28a745',
-    color: 'white',
-    textDecoration: 'none',
-    borderRadius: '5px',
-    fontWeight: 'bold',
-  },
-  grid: {
-    display: 'flex',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-    gap: '20px',
-  },
-  card: {
-    width: '250px',
-    padding: '20px',
-    border: '1px solid #ddd',
-    borderRadius: '8px',
-    backgroundColor: '#f9f9f9',
-    cursor: 'pointer',
-    transition: 'transform 0.2s',
-  },
-  logo: {
-    width: '80px',
-    height: '80px',
-    objectFit: 'contain',
-    marginBottom: '10px',
-  },
-  restaurantId: {
-    marginTop: '10px',
-    fontSize: '12px',
-    color: '#666',
-  },
-  error: {
-    color: 'red',
-    fontWeight: 'bold',
-  },
 };
 
 export default MyRestaurants;

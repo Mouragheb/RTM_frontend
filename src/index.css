@@ -2,12 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+
 /* Make the whole app stretch full height */
 html, body, #root {
   height: 100%;
   margin: 0;
   padding: 0;
 }
+  
 
 /* Flex container for layout */
 .app-wrapper {
@@ -16,7 +18,7 @@ html, body, #root {
   min-height: 100vh;
 }
 
-/* Push footer to bottom */
+/* Push footer to bottom  */
 .content {
   flex: 1;
 }

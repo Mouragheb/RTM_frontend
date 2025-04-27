@@ -18,7 +18,7 @@ const Login = () => {
     setError('');
 
     try {
-      const res = await API.post('/api/auth/login', form);
+      const res = await API.post('/auth/login', form);
       const token = res.data.token;
       const role = res.data.user.role;
       const restaurantId = res.data.user.restaurant;
@@ -37,7 +37,6 @@ const Login = () => {
         setError('Unknown user role.');
       }
     } catch (err) {
-      console.error(err);
       setError(err.response?.data?.message || 'Login failed');
     }
   };
@@ -47,15 +46,16 @@ const Login = () => {
       <Header />
       <Nav />
 
-      <main style={styles.container}>
-        <h2>Login</h2>
-        <form onSubmit={handleSubmit} style={styles.form}>
+      <main className="max-w-md mx-auto px-6 py-10 text-center">
+        <h2 className="text-2xl font-semibold mb-6">Login</h2>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <input
             name="email"
             type="email"
             placeholder="Email"
             onChange={handleChange}
             required
+            className="border border-gray-300 rounded px-4 py-2"
           />
           <input
             name="password"
@@ -63,34 +63,21 @@ const Login = () => {
             placeholder="Password"
             onChange={handleChange}
             required
+            className="border border-gray-300 rounded px-4 py-2"
           />
-          {error && <p style={styles.error}>{error}</p>}
-          <button type="submit">Login</button>
+          {error && <p className="text-red-600 font-semibold">{error}</p>}
+          <button
+            type="submit"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
+          >
+            Login
+          </button>
         </form>
       </main>
 
       <Footer />
     </div>
   );
-};
-
-const styles = {
-  container: {
-    padding: '40px',
-    maxWidth: '400px',
-    margin: '0 auto',
-    textAlign: 'center',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '15px',
-    marginTop: '20px',
-  },
-  error: {
-    color: 'red',
-    fontWeight: 'bold',
-  },
 };
 
 export default Login;

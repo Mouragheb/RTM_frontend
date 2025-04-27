@@ -2,22 +2,10 @@ import React from 'react';
 
 const Footer = () => {
   return (
-    <footer style={styles.footer}>
+    <footer className="mt-10 py-5 text-center bg-gray-100 text-gray-700 text-sm border-t border-gray-300">
       <p>&copy; {new Date().getFullYear()} Restaurant Task Manager. All rights reserved.</p>
     </footer>
   );
-};
-
-const styles = {
-  footer: {
-    marginTop: '40px',
-    padding: '20px',
-    textAlign: 'center',
-    backgroundColor: '#f1f1f1',
-    color: '#333',
-    fontSize: '14px',
-    borderTop: '1px solid #ccc',
-  },
 };
 
 export default Footer;

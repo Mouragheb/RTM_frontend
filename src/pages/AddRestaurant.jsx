@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import API from '../api/api'; // Adjust the path as needed
+import API from '../api/api';
 import Header from '../components/Header';
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
@@ -13,8 +13,6 @@ const AddRestaurant = () => {
 
   const handleChange = (e) => {
     if (e.target.name === 'logo') {
-      // Debug: Log selected file info
-      console.log('Selected file:', e.target.files[0]);
       setForm({ ...form, logo: e.target.files[0] });
     } else {
       setForm({ ...form, [e.target.name]: e.target.value });
@@ -32,25 +30,16 @@ const AddRestaurant = () => {
     formData.append('address', form.address);
     if (form.logo) {
       formData.append('logo', form.logo);
-    } else {
-      console.log("No file selected for logo.");
-    }
-    
-    // Debug: Log the formData keys
-    for (let key of formData.keys()) {
-      console.log(key, formData.get(key));
     }
 
     try {
-      const response = await API.post('/api/restaurants/create', formData, {
+      const response = await API.post('/restaurants/create', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${token}`
         }
       });
-      console.log('Response from createRestaurant:', response.data);
       setSuccess(`Restaurant created. Your ID: ${response.data.restaurantId}`);
-      // After a short delay, redirect to the manager's restaurant list
       setTimeout(() => {
         navigate('/my-restaurants');
       }, 1500);
@@ -64,15 +53,16 @@ const AddRestaurant = () => {
     <div>
       <Header />
       <Nav />
-      <main style={styles.container}>
-        <h2>Add New Restaurant</h2>
-        <form onSubmit={handleSubmit} style={styles.form}>
+      <main className="max-w-md mx-auto px-4 py-10 text-center">
+        <h2 className="text-2xl font-semibold mb-6">Add New Restaurant</h2>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 bg-white p-6 border rounded shadow-sm">
           <input
             name="name"
             type="text"
             placeholder="Restaurant Name"
             onChange={handleChange}
             required
+            className="border p-2 rounded"
           />
           <input
             name="address"
@@ -80,43 +70,28 @@ const AddRestaurant = () => {
             placeholder="Restaurant Address"
             onChange={handleChange}
             required
+            className="border p-2 rounded"
           />
           <input
             name="logo"
             type="file"
             accept="image/*"
             onChange={handleChange}
+            className="border p-2 rounded"
           />
-          {error && <p style={styles.error}>{error}</p>}
-          {success && <p style={styles.success}>{success}</p>}
-          <button type="submit">Add Restaurant</button>
+          {error && <p className="text-red-600 font-medium">{error}</p>}
+          {success && <p className="text-green-600 font-medium">{success}</p>}
+          <button
+            type="submit"
+            className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition"
+          >
+            Add Restaurant
+          </button>
         </form>
       </main>
       <Footer />
     </div>
   );
-};
-
-const styles = {
-  container: {
-    padding: '40px',
-    maxWidth: '500px',
-    margin: '0 auto',
-    textAlign: 'center',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '15px',
-  },
-  error: {
-    color: 'red',
-    fontWeight: 'bold',
-  },
-  success: {
-    color: 'green',
-    fontWeight: 'bold',
-  },
 };
 
 export default AddRestaurant;

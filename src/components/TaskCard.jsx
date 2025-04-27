@@ -1,126 +1,90 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import API from '../api/api';
+import { BASE_IMAGE_URL } from '../utils/constants';
 
-const TaskCard = ({ task, onComplete, baseUrl = '' }) => {
-  const [completionImage, setCompletionImage] = useState(null);
-  const [uploading, setUploading] = useState(false);
+const TaskCard = ({ task, employeeView = false, onComplete }) => {
+  const [completionPhoto, setCompletionPhoto] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const handleFileChange = (e) => {
-    setCompletionImage(e.target.files[0]);
+    setCompletionPhoto(e.target.files[0]);
   };
 
-  const handleComplete = async () => {
-    if (!completionImage) return alert('Please upload an image before marking complete.');
+  const handleMarkComplete = async () => {
+    if (!completionPhoto) {
+      alert('Please upload a photo before marking complete.');
+      return;
+    }
 
     const formData = new FormData();
-    formData.append('photo', completionImage);
+    formData.append('photo', completionPhoto);
 
     try {
-      setUploading(true);
-      const token = localStorage.getItem('token');
-      await API.put(`/api/tasks/${task._id}/complete`, formData, {
+      setSubmitting(true);
+      await API.put(`/tasks/${task._id}/complete`, formData, {
         headers: {
-          Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
-      onComplete?.();
+      onComplete(task._id);
     } catch (err) {
       console.error('Error marking task complete:', err);
-      alert('Failed to complete task.');
+      alert('Failed to mark task complete. Try again.');
     } finally {
-      setUploading(false);
+      setSubmitting(false);
     }
   };
 
-  // Construct image URLs using baseUrl if provided
-  const getImageUrl = (path) => (path ? `${baseUrl}/${path}` : null);
-
   return (
-    <div style={styles.card}>
-      <h4>{task.title}</h4>
+    <div className="border p-4 rounded shadow-md">
+      <h3 className="font-bold">{task.title}</h3>
       <p>{task.description}</p>
-      <p><strong>Due:</strong> {new Date(task.dueDate).toLocaleDateString()}</p>
-      <p><strong>Frequency:</strong> {task.frequency}</p>
-      <p><strong>Status:</strong> {task.status}</p>
+      <p>Due: {new Date(task.dueDate).toLocaleDateString()}</p>
+      <p>Frequency: {task.frequency}</p>
+      <p>Status: {task.status}</p>
 
-      <div style={styles.imagesContainer}>
-        {task.status === 'completed' ? (
-          <>
+      {employeeView && (
+        <>
+          <div className="my-2">
             {task.photoBefore && (
               <div>
-                <p><strong>Before:</strong></p>
+                <span className="font-semibold">Before:</span>
                 <img
-                  src={getImageUrl(task.photoBefore)}
+                  src={`${BASE_IMAGE_URL}/${task.photoBefore}`}
                   alt="Before"
-                  style={styles.image}
+                  className="w-24 h-24 object-cover mt-1"
                 />
               </div>
             )}
             {task.photoAfter && (
-              <div>
-                <p><strong>After:</strong></p>
+              <div className="mt-2">
+                <span className="font-semibold">After:</span>
                 <img
-                  src={getImageUrl(task.photoAfter)}
+                  src={`${BASE_IMAGE_URL}/${task.photoAfter}`}
                   alt="After"
-                  style={styles.image}
+                  className="w-24 h-24 object-cover mt-1"
                 />
               </div>
             )}
-          </>
-        ) : (
-          task.photoBefore && (
-            <div>
-              <p><strong>Task Image:</strong></p>
-              <img
-                src={getImageUrl(task.photoBefore)}
-                alt="Task"
-                style={styles.image}
-              />
-            </div>
-          )
-        )}
-      </div>
+          </div>
 
-      {!task.completed && (
-        <div style={styles.uploadSection}>
-          <input type="file" accept="image/*" onChange={handleFileChange} />
-          <button
-            onClick={handleComplete}
-            disabled={!completionImage || uploading}
-          >
-            {uploading ? 'Uploading...' : 'Mark as Completed'}
-          </button>
-        </div>
+          {!task.completed && (
+            <div className="mt-2">
+              <input type="file" onChange={handleFileChange} />
+              <button
+                onClick={handleMarkComplete}
+                className="bg-green-500 text-white font-bold py-2 px-4 rounded mt-2"
+                disabled={submitting}
+              >
+                {submitting ? 'Submitting...' : 'Mark as Completed'}
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
-};
-
-const styles = {
-  card: {
-    border: '1px solid #ccc',
-    padding: '15px',
-    borderRadius: '8px',
-    backgroundColor: '#fff',
-    width: '300px',
-    boxShadow: '0 0 4px rgba(0,0,0,0.1)',
-  },
-  image: {
-    width: '100%',
-    borderRadius: '5px',
-    marginBottom: '10px',
-  },
-  uploadSection: {
-    marginTop: '10px',
-  },
-  imagesContainer: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    gap: '10px',
-    marginTop: '10px',
-    flexWrap: 'wrap',
-  },
 };
 
 export default TaskCard;

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import API from '../api/api'; // Adjust the path as needed
+import API from '../api/api';
+
 const PhotoUpload = ({ taskId, token, onCompleted }) => {
   const [file, setFile] = useState(null);
 
@@ -15,7 +16,7 @@ const PhotoUpload = ({ taskId, token, onCompleted }) => {
     formData.append('photo', file);
 
     try {
-      await API.put(`/api/tasks/${taskId}/complete`, formData, {
+      await API.put(`/tasks/${taskId}/complete`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
@@ -31,20 +32,21 @@ const PhotoUpload = ({ taskId, token, onCompleted }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={styles.form}>
-      <input type="file" accept="image/*" onChange={handleFileChange} />
-      <button type="submit">Upload & Complete</button>
+    <form onSubmit={handleSubmit} className="mt-3 flex flex-col gap-2">
+      <input
+        type="file"
+        accept="image/*"
+        className="border p-2 rounded"
+        onChange={handleFileChange}
+      />
+      <button
+        type="submit"
+        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+      >
+        Upload & Complete
+      </button>
     </form>
   );
-};
-
-const styles = {
-  form: {
-    marginTop: '10px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-  },
 };
 
 export default PhotoUpload;

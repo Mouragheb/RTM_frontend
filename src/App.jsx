@@ -7,7 +7,7 @@ import EmployeeDashboard from './pages/EmployeeDashboard';
 import AddRestaurant from './pages/AddRestaurant';
 import MyRestaurants from './pages/MyRestaurants';
 import AddTask from './pages/AddTask';
-import './index.css'; // Adjust the path if different
+//import './index.css'; // Adjust the path if different
 
 function App() {
   return (
