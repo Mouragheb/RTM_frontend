@@ -10,12 +10,15 @@ const Register = () => {
     name: '',
     email: '',
     password: '',
+    confirmPassword: '',
     role: 'manager',
     restaurantId: '',
   });
 
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -26,8 +29,17 @@ const Register = () => {
     e.preventDefault();
     setError('');
     setSuccess(false);
+
+    if (form.password !== form.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    const payload = { ...form };
+    delete payload.confirmPassword;
+
     try {
-      await API.post('/auth/register', form);
+      await API.post('/auth/register', payload);
       setSuccess(true);
       setTimeout(() => navigate('/login'), 1500);
     } catch (err) {
@@ -59,14 +71,43 @@ const Register = () => {
             required
             className="border border-gray-300 rounded px-4 py-2"
           />
-          <input
-            name="password"
-            type="password"
-            placeholder="Password"
-            onChange={handleChange}
-            required
-            className="border border-gray-300 rounded px-4 py-2"
-          />
+
+          {/* Password Field */}
+          <div className="relative">
+            <input
+              name="password"
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Password"
+              onChange={handleChange}
+              required
+              className="border border-gray-300 rounded px-4 py-2 w-full"
+            />
+            <span
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500 text-lg"
+            >
+              {showPassword ? '🚫' : '👁️'}
+            </span>
+          </div>
+
+          {/* Confirm Password Field */}
+          <div className="relative">
+            <input
+              name="confirmPassword"
+              type={showConfirm ? 'text' : 'password'}
+              placeholder="Confirm Password"
+              onChange={handleChange}
+              required
+              className="border border-gray-300 rounded px-4 py-2 w-full"
+            />
+            <span
+              onClick={() => setShowConfirm(!showConfirm)}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500 text-lg"
+            >
+              {showConfirm ? '🚫' : '👁️'}
+            </span>
+          </div>
+
           <select
             name="role"
             value={form.role}
