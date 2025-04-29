@@ -8,6 +8,7 @@ import API from '../api/api';
 const Login = () => {
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) =>
@@ -57,14 +58,24 @@ const Login = () => {
             required
             className="border border-gray-300 rounded px-4 py-2"
           />
-          <input
-            name="password"
-            type="password"
-            placeholder="Password"
-            onChange={handleChange}
-            required
-            className="border border-gray-300 rounded px-4 py-2"
-          />
+
+          <div className="relative">
+            <input
+              name="password"
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Password"
+              onChange={handleChange}
+              required
+              className="border border-gray-300 rounded px-4 py-2 w-full"
+            />
+            <span
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500 text-lg"
+            >
+              {showPassword ? '🚫' : '👁'}
+            </span>
+          </div>
+
           {error && <p className="text-red-600 font-semibold">{error}</p>}
           <button
             type="submit"
